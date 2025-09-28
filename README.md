@@ -1,6 +1,6 @@
 # Formulario React - País, Estado y Ciudad
 
-Este proyecto es un formulario interactivo en **React** que permite seleccionar **país, estado/provincia y ciudad**, junto con datos personales. Los datos de localización se simulan para poder usar el formulario.
+Este proyecto es un formulario interactivo en **React** que permite seleccionar **país, estado/provincia y ciudad**, junto con datos personales. los datos se reciben de api country,states y city que me recomendaron.
 
 ---
 
@@ -9,7 +9,7 @@ Este proyecto es un formulario interactivo en **React** que permite seleccionar 
 - React 19
 - JavaScript
 - TailwindCSS para estilos
-- Axios (listo para usar con API real)
+- Axios para consumir la api
 
 ---
 
@@ -43,5 +43,3 @@ El formulario incluye los siguientes campos:
 Al hacer clic en **Guardar**, se muestra un **modal** para confirmar los datos.
 
 Al confirmar, se muestra un mensaje indicando que los datos se enviaron correctamente.
-
-> Actualmente los datos de países, estados y ciudades son **simulados**. Más adelante se reemplazarán por la API real usando `axios`.

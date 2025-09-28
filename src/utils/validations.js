@@ -1,5 +1,4 @@
 /**
- * Función de validación centralizada para formularios
  * @param {Object} data - Los datos del formulario a validar
  * @param {string|null} fieldName - Nombre del campo específico a validar (opcional)
  * @returns {Object} - Objeto con los errores de validación

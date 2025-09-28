@@ -1,7 +1,7 @@
 //react
 import { useState } from "react";
-//data
-import { countries, states, cities } from "../data/locationData";
+//hooks
+import { useLocations } from "../hooks/useLocations";
 //components
 import Input from "../components/Input";
 import Select from "../components/Select";
@@ -9,7 +9,7 @@ import Modal from "../components/Modal";
 //utils
 import { validateForm } from "../utils/validations";
 
-export default function Formulario() {
+export default function Form() {
     const [formData, setFormData] = useState({
         nombre: "",
         email: "",
@@ -23,6 +23,19 @@ export default function Formulario() {
     const [errors, setErrors] = useState({});
     const [showModal, setShowModal] = useState(false);
     const [submitted, setSubmitted] = useState(false);
+
+    const {
+        countries,
+        states,
+        cities,
+        loadingCountries,
+        loadingStates,
+        loadingCities,
+        errorCountries,
+        errorStates,
+        errorCities
+    } = useLocations(formData.pais, formData.estado);
+
 
     const handleChange = (e) => {
         const { name, value } = e.target;
@@ -41,7 +54,6 @@ export default function Formulario() {
         setErrors((prev) => ({
             ...prev,
             [name]: fieldErrors[name] || "",
-            // Limpiar errores de campos dependientes cuando se resetean
             ...(name === "pais" ? { estado: "", ciudad: "" } : {}),
             ...(name === "estado" ? { ciudad: "" } : {}),
         }));
@@ -50,7 +62,6 @@ export default function Formulario() {
     const handleSubmit = (e) => {
         e.preventDefault();
 
-        // Validar todos los campos usando la función centralizada
         const newErrors = validateForm(formData);
         setErrors(newErrors);
 
@@ -128,36 +139,54 @@ export default function Formulario() {
                         </div>
 
                         <div className="space-y-4">
-                            <h3 className="text-lg font-semibold text-gray-700 border-b pb-2">Ubicación</h3>
+                            <div className="flex items-center justify-between">
+                                <h3 className="text-lg font-semibold text-gray-700">Ubicación</h3>
+                            </div>
+                            <div className="border-b pb-2"></div>
                             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                                 <Select
                                     label="País *"
                                     name="pais"
                                     value={formData.pais}
                                     onChange={handleChange}
-                                    options={countries}
+                                    options={countries.map(country => ({
+                                        id: country.iso2,
+                                        name: country.name
+                                    }))}
                                     error={errors.pais}
+                                    loading={loadingCountries}
+                                    errorMessage={errorCountries}
+                                    required
                                 />
                                 <Select
                                     label="Estado/Provincia *"
                                     name="estado"
                                     value={formData.estado}
                                     onChange={handleChange}
-                                    options={states[formData.pais] || []}
+                                    options={states.map(state => ({
+                                        id: state.iso2,
+                                        name: state.name
+                                    }))}
                                     disabled={!formData.pais}
                                     error={errors.estado}
+                                    loading={loadingStates}
+                                    errorMessage={errorStates}
+                                    required
                                 />
                                 <Select
                                     label="Ciudad *"
                                     name="ciudad"
                                     value={formData.ciudad}
                                     onChange={handleChange}
-                                    options={(cities[formData.estado] || []).map((city) => ({
-                                        id: city,
-                                        name: city,
+                                    options={cities.map(city => ({
+                                        id: city.id.toString(),
+                                        name: city.name
                                     }))}
                                     disabled={!formData.estado}
                                     error={errors.ciudad}
+                                    loading={loadingCities}
+                                    errorMessage={errorCities}
+                                    required
                                 />
                             </div>
                         </div>
@@ -227,18 +256,20 @@ export default function Formulario() {
                                 <div>
                                     <span className="text-sm font-medium text-gray-500">País:</span>
                                     <p className="font-semibold text-gray-800">
-                                        {countries.find((c) => c.id === formData.pais)?.name}
+                                        {countries.find((c) => c.iso2 === formData.pais)?.name || formData.pais}
                                     </p>
                                 </div>
                                 <div>
                                     <span className="text-sm font-medium text-gray-500">Estado:</span>
                                     <p className="font-semibold text-gray-800">
-                                        {states[formData.pais]?.find((s) => s.id === formData.estado)?.name}
+                                        {states.find((s) => s.iso2 === formData.estado)?.name || formData.estado}
                                     </p>
                                 </div>
                                 <div>
                                     <span className="text-sm font-medium text-gray-500">Ciudad:</span>
-                                    <p className="font-semibold text-gray-800">{formData.ciudad}</p>
+                                    <p className="font-semibold text-gray-800">
+                                        {cities.find((c) => c.id.toString() === formData.ciudad)?.name || formData.ciudad}
+                                    </p>
                                 </div>
                             </div>
                         </div>
